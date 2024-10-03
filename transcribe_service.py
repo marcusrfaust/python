@@ -24,7 +24,7 @@ def selenium_example():
     chrome_options.add_argument("--disable-dev-shm-usage")
 
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get("https://www.example.com")
+    driver.get("https://www.marcusfaust.com")
 
     page_title = driver.title
     driver.quit()
