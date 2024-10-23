@@ -1,0 +1,39 @@
+from flask import Flask, request, jsonify
+import subprocess
+
+app = Flask(__name__)
+
+@app.route('/transcribe', methods=['POST'])
+def transcribe():
+    data = request.get_json()
+
+    video_id = data.get('video_id')
+    proxy = data.get('proxy', "http://iwxtrxkd-rotate:ggg3qp5uvcw4@p.webshare.io:80")
+
+    if not video_id:
+        return jsonify({"error": "Missing video_id"}), 400
+
+    try:
+        # Executa o comando youtube_transcript_api com o proxy
+        result = subprocess.run(
+            ['youtube_transcript_api', video_id, '--https-proxy', proxy],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if result.returncode != 0:
+            return jsonify({"error": result.stderr}), 500
+
+        return jsonify({"transcript": result.stdout}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Rota de saúde para verificar o status do serviço
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "healthy"}), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
